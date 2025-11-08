@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(dir /s /b \"C:\\Users\\tatia\\games\\templates\\endless_runner\\lib\")",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter clean:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter build:*)",
+      "Bash(dir /s /b \"C:\\Users\\tatia\\games\\templates\\endless_runner\\lib\\tamagotchi\")",
+      "Bash(flutter run)",
+      "Bash(flutter run:*)",
+      "Bash(timeout 2 cat:*)",
+      "Bash(timeout 5 cat:*)",
+      "Bash(nc localhost 65010)",
+      "Bash(powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait(''r'')\")",
+      "Bash(adb:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
