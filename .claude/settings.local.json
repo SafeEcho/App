@@ -14,7 +14,9 @@
       "Bash(timeout 5 cat:*)",
       "Bash(nc localhost 65010)",
       "Bash(powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait(''r'')\")",
-      "Bash(adb:*)"
+      "Bash(adb:*)",
+      "Bash(dir /b \"C:\\Users\\tatia\\games\\templates\\endless_runner\\assets\\images\\echomimi\")",
+      "Bash(powershell -Command \"Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait(''R'')\")"
     ],
     "deny": [],
     "ask": []

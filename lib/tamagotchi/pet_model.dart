@@ -237,6 +237,12 @@ class PetModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Establece el nivel de la mascota directamente
+  void setLevel(int newLevel) {
+    _level = newLevel.clamp(1, 100);
+    notifyListeners();
+  }
+
   /// Cura a la mascota (después de atenderla cuando está enferma)
   void heal() {
     _health = 100.0;

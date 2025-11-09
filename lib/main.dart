@@ -48,11 +48,13 @@ class _EchomimiAppState extends State<EchomimiApp> {
     final persistence = LocalStoragePetPersistence();
     // Limpiar datos anteriores para asegurar que EchoMimi se use como nombre
     await persistence.clearPetData();
-    
+
     _petModel = PetModel(persistence);
     await _petModel.loadData();
     // Asegurar que el nombre es EchoMimi
     _petModel.setName('EchoMimi');
+    // Establecer el nivel en 2 para desbloquear la funcionalidad del nivel 2
+    _petModel.setLevel(2);
 
     setState(() {
       _isLoading = false;
@@ -149,7 +151,7 @@ class _EchomimiAppState extends State<EchomimiApp> {
           ),
         ),
         home: _showWelcome
-            ? WelcomeScreen(onStart: _onStartApp)
+            ? WelcomeScreen(onModeSelected: (mode) => _onStartApp())
             : _showLevelSelection
                 ? EchoPanelScreen(onLevelSelected: _onLevelSelected)
                 : const PetHomeScreen(),

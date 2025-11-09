@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'dart:math' as math;
 
-/// Pantalla de bienvenida con diseño profesional
+/// Pantalla de bienvenida limpia y pastel para Safe Echo
+/// Diseño minimalist con cloud character adorable y colores suaves
 class WelcomeScreen extends StatefulWidget {
-  final VoidCallback onStart;
+  final Function(String)? onModeSelected;
 
   const WelcomeScreen({
     super.key,
-    required this.onStart,
+    this.onModeSelected,
   });
 
   @override
@@ -16,63 +16,72 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen>
-  with TickerProviderStateMixin {
-  late AnimationController _floatController;
-  late AnimationController _scaleController;
-  late AnimationController _starController;
-  late Animation<double> _floatAnimation;
-  late Animation<double> _scaleAnimation;
+    with TickerProviderStateMixin {
+  late AnimationController _cloudFloatController;
+  late AnimationController _cloudScaleController;
+  late AnimationController _buttonScaleController;
+  late Animation<double> _cloudFloatAnimation;
+  late Animation<double> _cloudScaleAnimation;
+  late Animation<double> _buttonScaleAnimation;
 
   @override
   void initState() {
     super.initState();
 
-    // Animación de flotación suave
-    _floatController = AnimationController(
+    // Animación de flotación suave para la nube principal
+    _cloudFloatController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat(reverse: true);
 
-    _floatAnimation = Tween<double>(
-      begin: -8,
-      end: 8,
+    _cloudFloatAnimation = Tween<double>(
+      begin: -12,
+      end: 12,
     ).animate(CurvedAnimation(
-      parent: _floatController,
+      parent: _cloudFloatController,
       curve: Curves.easeInOut,
     ));
 
-    // Animación de escala (respiración)
-    _scaleController = AnimationController(
+    // Animación de respiración (escala suave)
+    _cloudScaleController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.98,
-      end: 1.02,
+    _cloudScaleAnimation = Tween<double>(
+      begin: 0.97,
+      end: 1.03,
     ).animate(CurvedAnimation(
-      parent: _scaleController,
+      parent: _cloudScaleController,
       curve: Curves.easeInOut,
     ));
 
-    // Animación de estrellas parpadeantes
-    _starController = AnimationController(
-      duration: const Duration(seconds: 2),
+    // Animación del botón al cargar
+    _buttonScaleController = AnimationController(
+      duration: const Duration(milliseconds: 700),
       vsync: this,
-    )..repeat();
+    );
+
+    _buttonScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _buttonScaleController, curve: Curves.elasticOut),
+    );
+
+    // Iniciar animación del botón
+    _buttonScaleController.forward();
   }
 
   @override
   void dispose() {
-    _floatController.dispose();
-    _scaleController.dispose();
-    _starController.dispose();
+    _cloudFloatController.dispose();
+    _cloudScaleController.dispose();
+    _buttonScaleController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FA),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -81,186 +90,125 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFFE8F4F8), // Gris azulado muy claro (casi blanco)
-              Color(0xFFF5F9FB), // Blanco azulado
-              Color(0xFFFFFFFF), // Blanco puro
+              Color(0xFFF0F4F8), // Gris claro pastel
+              Color(0xFFF5F7FA), // Gris azulado muy claro
+              Color(0xFFFAFBFC), // Casi blanco
             ],
           ),
         ),
         child: Stack(
           children: [
-            // Nubecitas decorativas de fondo (superior izquierda)
+            // Nube decorativa superior izquierda (mitad visible)
             Positioned(
-              top: 60,
-              left: 20,
-              child: AnimatedBuilder(
-                animation: _floatAnimation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(0, _floatAnimation.value * 0.5),
-                    child: Opacity(
-                      opacity: 0.7,
-                      child: SvgPicture.asset(
-                        'assets/images/echomimi/cloud.svg',
-                        width: 80,
-                        height: 50,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Nubecita pequeña superior derecha
-            Positioned(
-              top: 40,
-              right: 30,
-              child: AnimatedBuilder(
-                animation: _floatAnimation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(0, -_floatAnimation.value * 0.3),
-                    child: Opacity(
-                      opacity: 0.6,
-                      child: SvgPicture.asset(
-                        'assets/images/echomimi/cloud.svg',
-                        width: 60,
-                        height: 40,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Estrellas decorativas
-            Positioned(
-              top: 80,
-              right: 60,
-              child: AnimatedBuilder(
-                animation: _starController,
-                builder: (context, child) {
-                  final opacity = 0.45 + (0.25 * math.sin(_starController.value * math.pi * 2));
-                  return Opacity(
-                    opacity: opacity.clamp(0.2, 0.7),
-                    child: SvgPicture.asset(
-                      'assets/images/echomimi/stars.svg',
-                      width: 50,
-                      height: 50,
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Nubecitas inferiores
-            Positioned(
-              bottom: 120,
-              left: 10,
-              child: AnimatedBuilder(
-                animation: _floatAnimation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(0, -_floatAnimation.value * 0.4),
-                    child: Opacity(
-                      opacity: 0.6,
-                      child: SvgPicture.asset(
-                        'assets/images/echomimi/cloud.svg',
-                        width: 90,
-                        height: 55,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            Positioned(
-              bottom: 140,
-              right: 20,
-              child: AnimatedBuilder(
-                animation: _floatAnimation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(0, _floatAnimation.value * 0.6),
-                    child: Opacity(
-                      opacity: 0.7,
-                      child: SvgPicture.asset(
-                        'assets/images/echomimi/cloud.svg',
-                        width: 70,
-                        height: 45,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            // Contenido principal
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 80),
-
-                    // Título "Welcome!"
-                    const Text(
-                      'Welcome!',
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF2D3748),
-                        letterSpacing: -1,
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // Subtítulo
-                    Text(
-                      'Start your journey with EchoMimi',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: const Color(0xFF2D3748).withOpacity(0.6),
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-
-                    const SizedBox(height: 60),
-
-                    // ECHOMIMI animado con SVG - con más movimiento
-                    AnimatedBuilder(
-                      animation: Listenable.merge([_floatAnimation, _scaleAnimation]),
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(_floatAnimation.value * 0.3, _floatAnimation.value * 1.5),
-                          child: Transform.scale(
-                            scale: _scaleAnimation.value,
-                            child: SvgPicture.asset(
-                              'assets/images/echomimi/level_1.svg',
-                              width: 220,
-                              height: 220,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 50),
-
-                    // Logo ECHOMIMI con animación flotante
-                    _buildAnimatedEchoMimiLogo(),
-
-                    const Spacer(),
-
-                    // Botón Start con animación
-                    _buildStartButton(),
-
-                    const SizedBox(height: 50),
-                  ],
+              top: -30,
+              left: -40,
+              child: Opacity(
+                opacity: 0.6,
+                child: SvgPicture.asset(
+                  'assets/images/echomimi/cloud.svg',
+                  width: 120,
+                  height: 80,
                 ),
+              ),
+            ),
+
+            // Estrellas superiores derecha
+            Positioned(
+              top: 50,
+              right: 30,
+              child: SvgPicture.asset(
+                'assets/images/echomimi/stars.svg',
+                width: 60,
+                height: 60,
+              ),
+            ),
+
+            // Nube decorativa inferior derecha
+            Positioned(
+              bottom: -30,
+              right: -40,
+              child: Opacity(
+                opacity: 0.5,
+                child: SvgPicture.asset(
+                  'assets/images/echomimi/cloud.svg',
+                  width: 150,
+                  height: 100,
+                ),
+              ),
+            ),
+
+            // Contenido principal centrado
+            SafeArea(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 24),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    // Título "SAFE ECHO" en letras bubble
+                                    _buildBubbleTitle(),
+
+                                    const SizedBox(height: 20),
+
+                                    // Texto "Welcome!"
+                                    const Text(
+                                      'Welcome!',
+                                      style: TextStyle(
+                                        fontSize: 42,
+                                        fontWeight: FontWeight.w900,
+                                        color: Color(0xFF1A202C),
+                                        letterSpacing: -1.5,
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 8),
+
+                                    // Subtítulo
+                                    Text(
+                                      'Start your journey of digital wellness',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        color: const Color(0xFF4A5568).withValues(alpha: 0.7),
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+
+                                    const SizedBox(height: 30),
+
+                                    // Cloud character adorable animado
+                                    _buildAnimatedCloudCharacter(),
+
+                                    const SizedBox(height: 30),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            // Botones de selección de modo al fondo
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 20,
+                              ),
+                              child: _buildModeButtons(),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -269,108 +217,147 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     );
   }
 
-  // Logo ECHOMIMI con animación flotante e iluminación
-  Widget _buildAnimatedEchoMimiLogo() {
+  /// Construye el título "SAFE ECHO" usando el SVG logo_bubble
+  Widget _buildBubbleTitle() {
+    return SvgPicture.asset(
+      'assets/images/echomimi/logo_bubble.svg',
+      width: 280,
+      height: 110,
+    );
+  }
+
+  /// Construye el personaje nube adorable animado
+  Widget _buildAnimatedCloudCharacter() {
     return AnimatedBuilder(
-      animation: Listenable.merge([_floatAnimation, _scaleAnimation]),
+      animation: Listenable.merge([_cloudFloatAnimation, _cloudScaleAnimation]),
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(0, _floatAnimation.value * 2.5),
+          offset: Offset(0, _cloudFloatAnimation.value),
           child: Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                // Halo de iluminación (brillo envolvente)
-                Container(
-                  width: 320,
-                  height: 170,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(40),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF60A5FA).withOpacity(0.25),
-                        blurRadius: 40,
-                        offset: const Offset(0, 15),
-                        spreadRadius: 5,
-                      ),
-                      BoxShadow(
-                        color: const Color(0xFF60A5FA).withValues(alpha: 0.35),
-                        blurRadius: 50,
-                        offset: Offset.zero,
-                        spreadRadius: 12,
-                      ),
-                    ],
-                  ),
-                ),
-                // SVG del logo
-                SvgPicture.asset(
-                  'assets/images/echomimi/logo_bubble.svg',
-                  width: 280,
-                  height: 140,
-                  fit: BoxFit.contain,
-                ),
-              ],
-            ),
+            scale: _cloudScaleAnimation.value,
+            child: _buildCloudCharacter(),
           ),
         );
       },
     );
   }
 
-  // Botón de inicio con animación hover
-  Widget _buildStartButton() {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 800),
-      curve: Curves.elasticOut,
-      builder: (context, value, child) {
-        return Transform.scale(
-          scale: value,
-          child: Container(
-            width: double.infinity,
-            height: 60,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF93C5FD),
-                  Color(0xFF60A5FA),
-                ],
+  /// Construye el personaje usando level_3.svg
+  Widget _buildCloudCharacter() {
+    return Container(
+      width: 200,
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(100),
+        // Glow azul suave
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF60A5FA).withValues(alpha: 0.3),
+            blurRadius: 40,
+            spreadRadius: 5,
+          ),
+        ],
+      ),
+      child: SvgPicture.asset(
+        'assets/images/echomimi/level_3.svg',
+        width: 200,
+        height: 200,
+      ),
+    );
+  }
+
+
+  /// Construye los 4 botones de selección de modo
+  Widget _buildModeButtons() {
+    return ScaleTransition(
+      scale: _buttonScaleAnimation,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Fila 1: CHILDREN y TEENAGERS
+          Row(
+            children: [
+              Expanded(
+                child: _buildModeButton('CHILDREN', 'children'),
               ),
-              borderRadius: BorderRadius.circular(30),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF60A5FA).withValues(alpha: 0.4),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildModeButton('TEENAGERS', 'teenagers'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          // Fila 2: PARENTAL CONTROLS e INSTITUTIONAL ACCESS
+          Row(
+            children: [
+              Expanded(
+                child: _buildModeButton(
+                  'PARENTAL\nCONTROLS',
+                  'parental',
+                  fontSize: 13,
                 ),
-              ],
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: widget.onStart,
-                borderRadius: BorderRadius.circular(30),
-                splashColor: Colors.white.withOpacity(0.3),
-                highlightColor: Colors.white.withOpacity(0.1),
-                child: const Center(
-                  child: Text(
-                    'Start Game',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                      letterSpacing: 1,
-                    ),
-                  ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildModeButton(
+                  'INSTITUTIONAL\nACCESS',
+                  'institutional',
+                  fontSize: 13,
                 ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Construye un botón individual de modo
+  Widget _buildModeButton(String label, String mode, {double fontSize = 15}) {
+    return Container(
+      height: 52,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0xFF93C5FD), // Azul pastel claro
+            Color(0xFF60A5FA), // Azul pastel
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF60A5FA).withValues(alpha: 0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.onModeSelected?.call(mode),
+          borderRadius: BorderRadius.circular(12),
+          splashColor: Colors.white.withValues(alpha: 0.3),
+          highlightColor: Colors.white.withValues(alpha: 0.15),
+          child: Center(
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+                letterSpacing: 0.5,
+                height: 1.2,
               ),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
+
 }
+
